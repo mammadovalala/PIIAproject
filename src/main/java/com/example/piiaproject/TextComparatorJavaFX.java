@@ -2,8 +2,6 @@ package com.example.projet_piia_nouvelle_version;
 
 import javafx.application.Application;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
@@ -83,6 +81,7 @@ public class TextComparatorJavaFX extends Application {
 
         List<String> lines1 = List.of(text1.split("\\n"));
         List<String> lines2 = new ArrayList<>(List.of(text2.split("\\n")));
+        List<String> comments = new ArrayList<>();
 
         for (int i = 0; i < lines1.size(); i++) { // Se baser sur la taille de lines1 pour la comparaison
             String line1 = lines1.get(i);
@@ -114,14 +113,14 @@ public class TextComparatorJavaFX extends Application {
                     lineBox.getChildren().remove(addCommentaryButton);
                 });
 
-                int finalI = i;
+                int LastIndex = i;
                 rejectButton.setOnAction(e -> {
-                    if (finalI >= lines2.size()) {
-                        while (lines2.size() <= finalI) { // Ajout de lignes vides si nécessaire
+                    if (LastIndex >= lines2.size()) {
+                        while (lines2.size() <= LastIndex) { // Ajout de lignes vides si nécessaire
                             lines2.add("");
                         }
                     }
-                    lines2.set(finalI, line1); // Synchronisation avec la ligne de gauche
+                    lines2.set(LastIndex, line1); // Synchronisation avec la ligne de gauche
                     textAreaRight.setText(String.join("\n", lines2));
                     textDisplay.setText(line1 + " "); // Mise à jour visuelle
                     textDisplay.setStyle("-fx-fill: black;"); // Rétablir la couleur noire après acceptation
@@ -146,9 +145,41 @@ public class TextComparatorJavaFX extends Application {
                     confirmButton.setOnAction(event -> {
                         String comment = commentArea.getText(); // traitement sur le commentaire
 
+                        // on s'assure que la liste comments a suffisamment d'éléments pour chaque ligne
+                        while (comments.size() <= LastIndex) {
+                            comments.add(""); // Ajouter des commentaires vides si nécessaire
+                        }
+                        comments.set(LastIndex, comment); // Ajouter ou mettre à jour le commentaire pour cette ligne
+
                         lineBox.getChildren().remove(addCommentaryButton);
                         lineBox.getChildren().add(showCommentButton);
                         commentStage.close();
+                    });
+
+                    showCommentButton.setOnAction(ev -> {
+                        int IndexLine = LastIndex; // Récupérer l'index de la ligne
+                        String comment = comments.get(IndexLine); // Récupérer le commentaire associé à cette ligne
+
+                        Stage showcommentStage = new Stage();
+                        showcommentStage.initModality(Modality.APPLICATION_MODAL);
+                        showcommentStage.setTitle("Commentaire");
+
+                        VBox showcommentBox = new VBox(10);
+                        showcommentBox.setPadding(new Insets(10));
+
+                        Label showcommentLabel = new Label("Commentaire :");
+                        TextArea showcommentArea = new TextArea(comment);
+                        showcommentArea.setPrefRowCount(4); // Changer la taille de la zone de texte
+                        showcommentArea.setEditable(false); // Rendre le TextArea en lecture seule
+
+                        Button closeButton = new Button("Fermer");
+                        closeButton.setOnAction(event -> showcommentStage.close());
+
+                        showcommentBox.getChildren().addAll(showcommentLabel, showcommentArea, closeButton);
+
+                        Scene commentScene = new Scene(showcommentBox, 300, 200); // Changer la taille de la fenêtre
+                        showcommentStage.setScene(commentScene);
+                        showcommentStage.showAndWait();
                     });
 
                     Button cancelButton = new Button("Annuler");
@@ -159,6 +190,7 @@ public class TextComparatorJavaFX extends Application {
                     Scene commentScene = new Scene(commentBox, 300, 200); // Changer la taille de la fenêtre
                     commentStage.setScene(commentScene);
                     commentStage.showAndWait();
+
                 });
 
                 lineBox.getChildren().addAll(acceptButton, rejectButton, addCommentaryButton);
