@@ -1,4 +1,4 @@
-package com.example.projet_piia_nouvelle_version;
+/*package com.example.projet_piia_nouvelle_version;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -104,3 +104,4 @@ public class TextComparatorJavaFX extends Application {
         launch(args);
     }
 }
+*/

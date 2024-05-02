@@ -22,6 +22,7 @@ public class Interface extends Application {
     private Stage primaryStage;
     private File fichierRef;
     private File fichierModif;
+    private File fichierResultat;
     private Button fichierRefButton;
     private Button fichierModifButton;
     private FileModel model;
